@@ -4,6 +4,7 @@ require "rulers/routing"
 require "rulers/util"
 require "rulers/dependencies"
 require "rulers/controller"
+require "rulers/file_model"
 
 module Rulers
   class Application
@@ -16,9 +17,14 @@ module Rulers
   		klass, act = get_controller_and_action(env)
   		controller = klass.new(env)
   		text = controller.send(act)
-  		'echo debug > debug.txt';
+      if controller.get_response
+            st, hd, rs = controller.get_response.to_a
+            [st, hd, [rs.body].flatten]
+      else
+        'echo debug > debug.txt';
 	  		[200, {'Content-Type' => 'text/html'},
   			[text]]
+      end
   	end
   end
 end
